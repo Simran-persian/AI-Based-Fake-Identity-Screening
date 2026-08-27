@@ -1100,6 +1100,13 @@ async function queryChatbotBackend(userMessage) {
         .replace(/\*\*(.*?)\*\*/g, '<b>$1</b>')
         .replace(/\`(.*?)\`/g, '<code style="font-family:var(--font-mono);background:rgba(63,224,208,0.1);color:var(--cyan);padding:2px 5px;border-radius:4px;">$1</code>');
 
+      if (data.suggestedActions && data.suggestedActions.length > 0) {
+        const chipsHtml = data.suggestedActions.map(act => `
+          <button class="chat-chip" style="margin-top:6px;margin-right:4px;" onclick="executeChatbotAction('${act}')">${act}</button>
+        `).join('');
+        formattedAnswer += `<div style="margin-top:10px;padding-top:8px;border-top:1px dashed var(--line-bright);">${chipsHtml}</div>`;
+      }
+
       if (loadingEl) {
         loadingEl.innerHTML = formattedAnswer;
       } else {
@@ -1112,20 +1119,41 @@ async function queryChatbotBackend(userMessage) {
     const loadingEl = document.getElementById(loadingId);
     if (loadingEl) {
       const q = userMessage.toLowerCase();
-      let reply = "I am **SENTRY AI Copilot**, your real-time border security intelligence assistant.";
+      let reply = "<b>[SENTRY AI COPILOT SECURITY INTELLIGENCE]</b><br><br>I am your real-time border security assistant.";
       if (q.includes('formula') || q.includes('risk') || q.includes('score') || q.includes('weight')) {
-        reply = "📊 **SENTRY AI Threat Risk Scoring Model**:<br><br>• **Tampering Weight**: 40% (ELA & Noise Anomaly)<br>• **Biometric Face Match**: 25%<br>• **Document Rule Validation**: 20%<br>• **OCR Extraction**: 15%<br><br><b>Score Action Tiers</b>:<br>🟢 &lt; 25: CLEAR<br>🟡 25-49: REVIEW<br>🟠 50-74: ESCALATE<br>🔴 ≥ 75: REJECT";
+        reply = "<b>[AI THREAT RISK SCORING MODEL]</b><br><br>• <b>Tampering Weight</b>: 40% (ELA & Noise Anomaly)<br>• <b>Biometric Face Match</b>: 25%<br>• <b>Document Rule Validation</b>: 20%<br>• <b>OCR Extraction</b>: 15%<br><br><b>Score Action Tiers</b>:<br><span style='color:#34D399;'>● CLEAR</span>: &lt; 25<br><span style='color:#FBBF24;'>● REVIEW</span>: 25 - 49<br><span style='color:#FFB020;'>● ESCALATE</span>: 50 - 74<br><span style='color:#F5576C;'>● REJECT</span>: &ge; 75";
       } else if (q.includes('watchlist') || q.includes('interpol') || q.includes('flag')) {
-        reply = "🚨 **SENTRY Watchlist Security Registry**:<br><br>Cross-referenced against Interpol & Border Control Databases:<br>• **Aarav Sharma** (IND - `Z4091823`): Interpol Red Notice<br>• **Pavel Novak** (CZE - `C40217755`): Stolen Passport Alert<br><br>Matches trigger immediate <b>HIGH RISK (75+ Score)</b> hold.";
+        reply = "<b>[CENTRAL WATCHLIST & INTERPOL REGISTRY]</b><br><br>Cross-referenced against Interpol & Border Control Databases:<br>• <b>Aarav Sharma</b> (IND - <code>Z4091823</code>): Interpol Red Notice<br>• <b>Pavel Novak</b> (CZE - <code>C40217755</code>): Stolen Passport Alert<br><br>Matches trigger immediate <b>HIGH RISK (75+ Score)</b> hold.";
       } else if (q.includes('audit') || q.includes('hash') || q.includes('chain')) {
-        reply = "🛡️ **Cryptographic Tamper-Evident Audit Ledger**:<br><br>Every officer action and decision is stored in an immutable <b>SHA-256 Hash Chain</b>:<br><code>H_n = SHA-256(H_{n-1} + Timestamp + Actor + Payload)</code><br><br>Status: <b>VERIFIED INTACT (100% Valid)</b>.";
+        reply = "<b>[CRYPTOGRAPHIC AUDIT LEDGER]</b><br><br>Every officer action and decision is stored in an immutable <b>SHA-256 Hash Chain</b>:<br><code>H_n = SHA-256(H_{n-1} + Timestamp + Actor + Payload)</code><br><br>Status: <span style='color:#34D399;'><b>VERIFIED INTACT (100% Valid)</b></span>.";
       } else if (q.includes('icao') || q.includes('mrz') || q.includes('passport') || q.includes('visa')) {
-        reply = "🛂 **ICAO Doc 9303 Standard & MRZ Rules**:<br><br>• Validates 2x44 passport MRZ lines and Indian e-Visas.<br>• Executes <b>7-3-1 Modulus 10 check digit algorithms</b> for Document No., DOB, Expiry, and Composite checksums.";
+        reply = "<b>[ICAO Doc 9303 & MRZ RULES]</b><br><br>• Validates 2x44 passport MRZ lines and Indian e-Visas.<br>• Executes <b>7-3-1 Modulus 10 check digit algorithms</b> for Document No., DOB, Expiry, and Composite checksums.";
       } else if (q.includes('camera') || q.includes('liveness') || q.includes('face') || q.includes('webcam')) {
-        reply = "📷 **Biometric Liveness & Presentation Attack Detection (PAD)**:<br><br>SENTRY evaluates live camera feeds using ISO/IEC 30107-3 standards:<br>• <b>Passive Liveness Check</b>: Micro-motion & specular reflection analysis.<br>• <b>Anti-Spoofing Filters</b>: Rejects printed photos, screen replays, & deepfakes.<br>• Liveness Confidence: <b>99.4%</b>.";
+        reply = "<b>[BIOMETRIC LIVENESS & PAD ENGINE]</b><br><br>SENTRY evaluates live camera feeds using ISO/IEC 30107-3 standards:<br>• <b>Passive Liveness Check</b>: Micro-motion & specular reflection analysis.<br>• <b>Anti-Spoofing Filters</b>: Rejects printed photos, screen replays, & deepfakes.<br>• Liveness Confidence: <b>99.4%</b>.";
       }
       loadingEl.innerHTML = reply;
     }
+  }
+}
+
+function executeChatbotAction(actionName) {
+  if (actionName.includes('Model Weight') || actionName.includes('Configure')) {
+    goTo('admin');
+    appendChatbotMessage('bot', 'Opened <b>Admin Model Weight Configuration</b> view.');
+  } else if (actionName.includes('Audit')) {
+    goTo('audit');
+    appendChatbotMessage('bot', 'Opened <b>Tamper-Evident Hash Chain Audit Log</b> view.');
+  } else if (actionName.includes('Scan') || actionName.includes('Screening')) {
+    goTo('upload');
+    appendChatbotMessage('bot', 'Opened <b>New Document Screening Upload</b> view.');
+  } else if (actionName.includes('High Risk') || actionName.includes('Queue')) {
+    goTo('dashboard');
+    appendChatbotMessage('bot', 'Opened <b>Live Supervisor Queue</b> view.');
+  } else if (actionName.includes('Face') || actionName.includes('Camera')) {
+    startLiveCamera('face');
+    appendChatbotMessage('bot', 'Launched <b>Live Webcam Face Scanner</b>.');
+  } else {
+    queryChatbotBackend(actionName);
   }
 }
 

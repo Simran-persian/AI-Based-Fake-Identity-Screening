@@ -10,18 +10,18 @@ export interface ChatbotResponse {
 
 export class ChatbotService {
   static async queryAI(message: string, userId?: string): Promise<ChatbotResponse> {
-    const queryLower = message.toLowerCase();
+    const queryLower = message.toLowerCase().trim();
 
     // 1. Live Camera, Face Scan & Biometric Liveness / PAD Queries
     if (queryLower.includes('camera') || queryLower.includes('face') || queryLower.includes('liveness') || queryLower.includes('pad') || queryLower.includes('webcam') || queryLower.includes('biometric')) {
       return {
-        answer: `📷 **SENTRY Biometric Liveness & Presentation Attack Detection (PAD)**:\n\n` +
-          `SENTRY evaluates live camera feeds using multi-stage Presentation Attack Detection (ISO/IEC 30107-3 standard):\n\n` +
-          `• **Passive Liveness Verification**: Analyzes micro-facial motion, ocular reflections, and natural blink cycles.\n` +
-          `• **Anti-Spoofing Filters**: Prevents photo print attacks, high-resolution screen replays, 3D silicone mask spoofs, and deepfakes.\n` +
-          `• **Facial Embedding Similarity**: Computes 128-dimensional Deep Face Vector distance between traveler selfie and official document photo.\n` +
-          `• **Current Status**: Liveness Check ACTIVE (Confidence Score: **99.4%**).`,
-        suggestedActions: ['Run Live Face Check', 'Compare Document Photo', 'View PAD Forensics'],
+        answer: `<b>[BIOMETRIC LIVENESS & PAD ENGINE]</b><br><br>` +
+          `SENTRY evaluates live camera feeds using multi-stage Presentation Attack Detection (ISO/IEC 30107-3 standard):<br><br>` +
+          `• <b>Passive Liveness Verification</b>: Analyzes micro-facial motion, specular ocular reflections, and natural blink cycles.<br>` +
+          `• <b>Anti-Spoofing Filters</b>: Prevents photo print attacks, high-resolution screen replays, 3D silicone mask spoofs, and deepfakes.<br>` +
+          `• <b>Facial Embedding Similarity</b>: Computes 128-dimensional Deep Face Vector distance between traveler selfie and official document photo.<br>` +
+          `• <b>Active Status</b>: Live Camera Check ACTIVE (Confidence Score: <b>99.4%</b>).`,
+        suggestedActions: ['Run Live Face Check', 'Camera Liveness'],
         vfxTrigger: 'CYBER_FACE_GRID',
         sourceContext: 'ISO/IEC 30107-3 Biometric Liveness Engine'
       };
@@ -40,19 +40,19 @@ export class ChatbotService {
       const face = config ? config.faceMatchWeight : 0.25;
 
       return {
-        answer: `📊 **SENTRY AI Threat Risk Scoring Model**:\n\n` +
-          `The Threat Score ($S_{\\text{risk}} \\in [0, 100]$) is computed via weighted multi-modal signals:\n\n` +
-          `$$\\text{Score} = 100 \\times \\Big(${tamp} \\cdot S_{\\text{tamp}} + ${face} \\cdot (1 - S_{\\text{face}}) + ${val} \\cdot S_{\\text{val}} + ${ocr} \\cdot (1 - S_{\\text{ocr}})\\Big)$$\n\n` +
-          `**Active Factor Weights**:\n` +
-          `• **Digital Tampering (ELA / Noise Anomaly)**: **${tamp * 100}%** (Highest Impact)\n` +
-          `• **Biometric Face Match Distance**: **${face * 100}%**\n` +
-          `• **MRZ & Rules Validation**: **${val * 100}%**\n` +
-          `• **OCR Field Confidence**: **${ocr * 100}%**\n\n` +
-          `**Action Decision Tiers**:\n` +
-          `🟢 **< 25**: CLEAR (Auto-Approve)\n` +
-          `🟡 **25 - 49**: REVIEW (Secondary Inspection)\n` +
-          `🟠 **50 - 74**: ESCALATE (Supervisor Clearance Required)\n` +
-          `🔴 **≥ 75**: REJECT (Immediate Detention / Watchlist Hold)`,
+        answer: `<b>[AI THREAT RISK SCORING MODEL]</b><br><br>` +
+          `The Threat Score (0 to 100) is computed using dynamic model weights:<br><br>` +
+          `<code>Score = 100 * (${tamp} * TamperScore + ${face} * (1 - FaceMatch) + ${val} * ValRules + ${ocr} * (1 - OcrConf))</code><br><br>` +
+          `<b>Active Factor Weights</b>:<br>` +
+          `• <b>Digital Tampering (ELA / Noise Anomaly)</b>: <b>${tamp * 100}%</b> (Highest Impact)<br>` +
+          `• <b>Biometric Face Match Distance</b>: <b>${face * 100}%</b><br>` +
+          `• <b>MRZ & Rules Validation</b>: <b>${val * 100}%</b><br>` +
+          `• <b>OCR Field Confidence</b>: <b>${ocr * 100}%</b><br><br>` +
+          `<b>Action Decision Tiers</b>:<br>` +
+          `<span style="color:#34D399;">● CLEAR</span>: &lt; 25 (Auto-Approve)<br>` +
+          `<span style="color:#FBBF24;">● REVIEW</span>: 25 - 49 (Secondary Inspection)<br>` +
+          `<span style="color:#FFB020;">● ESCALATE</span>: 50 - 74 (Supervisor Clearance Required)<br>` +
+          `<span style="color:#F5576C;">● REJECT</span>: &ge; 75 (Immediate Detention / Watchlist Hold)`,
         suggestedActions: ['Configure Model Weights', 'View Risk Breakdown', 'Run Scan'],
         vfxTrigger: 'HUD_MATRIX_GLOW',
         sourceContext: 'Dynamic Risk Engine (SIH Prototype Standard)'
@@ -62,13 +62,13 @@ export class ChatbotService {
     // 3. Document Tampering & ELA Forensics Queries
     if (queryLower.includes('tamper') || queryLower.includes('ela') || queryLower.includes('fake') || queryLower.includes('forgery') || queryLower.includes('stamp') || queryLower.includes('doctored')) {
       return {
-        answer: `🔬 **SENTRY Optical Forensics & Error Level Analysis (ELA)**:\n\n` +
-          `To detect doctored passports, visas, and IDs, SENTRY executes 4 parallel forensic pipelines:\n\n` +
-          `1. **Error Level Analysis (ELA)**: Resaves image at 95% JPEG quality and measures local compression error variance. Doctored regions (e.g. modified DOB or swapped photo) display bright high-error spikes.\n` +
-          `2. **FFT Spectral Noise Frequency Analysis**: Detects spatial frequency grid anomalies caused by copy-paste stamp duplication.\n` +
-          `3. **Font Glyph Alignment**: Scans text line baselines and font pitch consistency against official government security typefaces.\n` +
-          `4. **MRZ Line Cross-Check**: Validates checksum digits against visual zone text.`,
-        suggestedActions: ['View ELA Heatmap', 'Scan Document', 'Check Forensics Log'],
+        answer: `<b>[OPTICAL FORENSICS & ELA ENGINE]</b><br><br>` +
+          `To detect doctored passports, visas, and IDs, SENTRY executes 4 parallel forensic pipelines:<br><br>` +
+          `1. <b>Error Level Analysis (ELA)</b>: Resaves image at 95% JPEG quality and measures local compression error variance. Doctored regions (e.g. modified DOB or swapped photo) display bright high-error spikes.<br>` +
+          `2. <b>FFT Spectral Noise Frequency Analysis</b>: Detects spatial frequency grid anomalies caused by copy-paste stamp duplication.<br>` +
+          `3. <b>Font Glyph Alignment</b>: Scans text line baselines and font pitch consistency against official government security typefaces.<br>` +
+          `4. <b>MRZ Line Cross-Check</b>: Validates checksum digits against visual zone text.`,
+        suggestedActions: ['View ELA Heatmap', 'Run Scan'],
         vfxTrigger: 'SCANNER_LASER_GRID',
         sourceContext: 'SENTRY Digital Forensics Hub'
       };
@@ -86,14 +86,14 @@ export class ChatbotService {
         ];
       }
 
-      const entryList = entries.map(e => `• **${e.fullName}** (${e.nationality} - \`${e.documentNumber}\`): ${e.reason}`).join('\n');
+      const entryList = entries.map(e => `• <b>${e.fullName}</b> (${e.nationality} - <code>${e.documentNumber}</code>): ${e.reason}`).join('<br>');
 
       return {
-        answer: `🚨 **SENTRY Central Watchlist & Interpol Registry**:\n\n` +
-          `SENTRY automatically cross-references every traveler against national & international security databases:\n\n` +
-          `${entryList}\n\n` +
-          `Matching any entry immediately flags the screening event as **HIGH RISK (75+ Score)** and notifies the Duty Supervisor via Socket.io real-time broadcast.`,
-        suggestedActions: ['Add Watchlist Entry', 'Review High Risk Queue'],
+        answer: `<b>[CENTRAL WATCHLIST & INTERPOL REGISTRY]</b><br><br>` +
+          `SENTRY automatically cross-references every traveler against national & international security databases:<br><br>` +
+          `${entryList}<br><br>` +
+          `Matching any entry immediately flags the screening event as <b>HIGH RISK (75+ Score)</b> and notifies the Duty Supervisor via Socket.io real-time broadcast.`,
+        suggestedActions: ['Review High Risk Queue', 'Check Watchlist'],
         vfxTrigger: 'ALERT_RED_PULSE',
         sourceContext: 'Watchlist Security Registry'
       };
@@ -107,11 +107,11 @@ export class ChatbotService {
       } catch (e) {}
 
       return {
-        answer: `🛡️ **Cryptographic Tamper-Evident Audit Ledger**:\n\n` +
-          `Every officer action, screening result, and decision is written to an immutable **SHA-256 Hash Chain**:\n\n` +
-          `$$H_n = \\text{SHA-256}\\Big(H_{n-1} \\parallel \\text{Timestamp} \\parallel \\text{ActorID} \\parallel \\text{Payload}\\Big)$$\n\n` +
-          `• Total Log Blocks: **${logsCount}**\n` +
-          `• Chain Status: **VERIFIED INTACT (100% Valid)**\n` +
+        answer: `<b>[CRYPTOGRAPHIC AUDIT LEDGER]</b><br><br>` +
+          `Every officer action, screening result, and decision is written to an immutable <b>SHA-256 Hash Chain</b>:<br><br>` +
+          `<code>H_n = SHA-256(H_{n-1} + Timestamp + ActorID + Payload)</code><br><br>` +
+          `• Total Log Blocks: <b>${logsCount}</b><br>` +
+          `• Chain Status: <span style="color:#34D399;"><b>VERIFIED INTACT (100% Valid)</b></span><br>` +
           `• Tamper Detection: If any database record is directly modified by an attacker, the hash chain breaks at that node and triggers an automated system alarm.`,
         suggestedActions: ['Verify Audit Hash Chain', 'View Audit Trail'],
         vfxTrigger: 'CYBER_SHIELD_VERIFIED',
@@ -122,12 +122,12 @@ export class ChatbotService {
     // 6. ICAO 9303 Standard / MRZ Questions
     if (queryLower.includes('mrz') || queryLower.includes('icao') || queryLower.includes('checksum') || queryLower.includes('visa') || queryLower.includes('passport')) {
       return {
-        answer: `🛂 **ICAO 9303 Standard & MRZ Validation Protocol**:\n\n` +
-          `SENTRY enforces strict ICAO Doc 9303 compliance for Machine Readable Travel Documents (MRTDs):\n\n` +
-          `• **Format Support**: Type 1 (IDs / Cards), Type 2 (Visas), Type 3 (Passports - 2x44 chars).\n` +
-          `• **Modulus 10 Checksum Algorithm**: Validates document number, birth date, expiry date, and composite checksum using weighting factors **[7, 3, 1]**.\n` +
-          `• **Indian Specimen Rules**: Full support for Indian e-Visas (2-line MRZ) and Indian Passports with optical security features.`,
-        suggestedActions: ['Scan Indian Passport', 'Scan Indian e-Visa', 'View ICAO Spec'],
+        answer: `<b>[ICAO Doc 9303 & MRZ VALIDATION PROTOCOL]</b><br><br>` +
+          `SENTRY enforces strict ICAO Doc 9303 compliance for Machine Readable Travel Documents (MRTDs):<br><br>` +
+          `• <b>Format Support</b>: Type 1 (IDs / Cards), Type 2 (Visas), Type 3 (Passports - 2x44 chars).<br>` +
+          `• <b>Modulus 10 Checksum Algorithm</b>: Validates document number, birth date, expiry date, and composite checksum using weighting factors <b>[7, 3, 1]</b>.<br>` +
+          `• <b>Indian Specimen Rules</b>: Full support for Indian e-Visas (2-line MRZ) and Indian Passports with optical security features.`,
+        suggestedActions: ['Run Scan', 'ICAO Rules'],
         vfxTrigger: 'SCANNER_LASER_GRID',
         sourceContext: 'ICAO Doc 9303 Standard Compliance'
       };
@@ -135,15 +135,15 @@ export class ChatbotService {
 
     // 7. General Intelligent Assistant Response
     return {
-      answer: `🤖 **SENTRY AI Copilot · Security Intelligence System**\n\n` +
-        `I am your real-time border security assistant. Ask me anything about:\n\n` +
-        `• **Live Camera & Biometric Liveness**: \`How does face liveness check work?\`\n` +
-        `• **Threat Scoring**: \`Explain risk formula weights\`\n` +
-        `• **Optical Forensics**: \`How is document tampering detected?\`\n` +
-        `• **Watchlist Lookup**: \`Show flagged Interpol watchlist entries\`\n` +
-        `• **Audit Chain Verification**: \`Verify audit chain SHA-256 hashes\`\n` +
-        `• **ICAO 9303 Compliance**: \`Explain passport MRZ checksum rules\``,
-      suggestedActions: ['Explain Risk Formula', 'Check Watchlist', 'Verify Audit Chain', 'Camera Liveness'],
+      answer: `<b>[SENTRY AI COPILOT SECURITY INTELLIGENCE]</b><br><br>` +
+        `Greetings. I am your real-time border security intelligence co-pilot. I can assist you with:<br><br>` +
+        `• <b>Live Camera & Biometric Liveness</b>: Ask <i>"How does face liveness check work?"</i><br>` +
+        `• <b>Threat Scoring</b>: Ask <i>"Explain risk formula weights"</i><br>` +
+        `• <b>Optical Forensics</b>: Ask <i>"How is document tampering detected?"</i><br>` +
+        `• <b>Watchlist Lookup</b>: Ask <i>"Show flagged Interpol watchlist entries"</i><br>` +
+        `• <b>Audit Chain Verification</b>: Ask <i>"Verify audit chain SHA-256 hashes"</i><br>` +
+        `• <b>ICAO 9303 Compliance</b>: Ask <i>"Explain passport MRZ checksum rules"</i>`,
+      suggestedActions: ['Risk Formula', 'Watchlist Flags', 'Audit Chain', 'Camera Liveness'],
       vfxTrigger: 'CYBER_PULSE_BLUE',
       sourceContext: 'SENTRY AI Copilot Intelligence'
     };
