@@ -44,16 +44,18 @@ const uploadsDir = path.resolve(__dirname, '../uploads');
 const demoAssetsDir = path.resolve(__dirname, '../demo-assets');
 const frontendDir = path.resolve(__dirname, '../../frontend');
 const rootDir = path.resolve(__dirname, '../../');
+const cwdDir = process.cwd();
 
 if (!fs.existsSync(uploadsDir)) {
-  fs.mkdirSync(uploadsDir, { recursive: true });
+  try { fs.mkdirSync(uploadsDir, { recursive: true }); } catch (e) {}
 }
 
-// Serve Static Assets (Uploads, Demo Assets, Frontend)
+// Serve Static Assets (Uploads, Demo Assets, Frontend, CWD)
 app.use('/uploads', express.static(uploadsDir));
 app.use('/demo-assets', express.static(demoAssetsDir));
 app.use(express.static(frontendDir));
 app.use(express.static(rootDir));
+app.use(express.static(cwdDir));
 
 // Health Check
 app.get('/api/health', (_req, res) => {
@@ -293,11 +295,14 @@ app.get('/api/reports/download/:id', async (req, res) => {
 app.get('*', (_req, res) => {
   const indexInFrontend = path.join(frontendDir, 'index.html');
   const indexInRoot = path.join(rootDir, 'index.html');
+  const indexInCwd = path.join(process.cwd(), 'index.html');
 
   if (fs.existsSync(indexInFrontend)) {
     res.sendFile(indexInFrontend);
   } else if (fs.existsSync(indexInRoot)) {
     res.sendFile(indexInRoot);
+  } else if (fs.existsSync(indexInCwd)) {
+    res.sendFile(indexInCwd);
   } else {
     res.send('SENTRY Backend Active. Frontend index.html not found.');
   }
@@ -308,10 +313,14 @@ app.use(errorHandler);
 
 const PORT = parseInt(env.PORT, 10) || 4000;
 
-server.listen(PORT, () => {
-  logger.info(`=======================================================`);
-  logger.info(`🇮🇳 SENTRY SINGLE LOCALHOST BACKEND + FRONTEND ACTIVE`);
-  logger.info(`🌐 OPEN IN YOUR BROWSER: http://localhost:${PORT}`);
-  logger.info(`📡 API Base: http://localhost:${PORT}/api`);
-  logger.info(`=======================================================`);
-});
+if (process.env.NODE_ENV !== 'production' || !process.env.VERCEL) {
+  server.listen(PORT, () => {
+    logger.info(`=======================================================`);
+    logger.info(`🇮🇳 SENTRY SINGLE LOCALHOST BACKEND + FRONTEND ACTIVE`);
+    logger.info(`🌐 OPEN IN YOUR BROWSER: http://localhost:${PORT}`);
+    logger.info(`📡 API Base: http://localhost:${PORT}/api`);
+    logger.info(`=======================================================`);
+  });
+}
+
+export default app;
