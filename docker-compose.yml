@@ -1,0 +1,45 @@
+version: '3.8'
+
+services:
+  # ================= POSTGRESQL (Real Relational Database) =================
+  postgres:
+    image: postgres:15-alpine
+    container_name: sentry_postgres
+    restart: always
+    environment:
+      POSTGRES_DB: sentry_screening_db
+      POSTGRES_USER: sentry_admin
+      POSTGRES_PASSWORD: sentry_secure_password_2026
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U sentry_admin -d sentry_screening_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # ================= SENTRY BACKEND (TypeScript + Express + Prisma ORM + Socket.io) =================
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile.backend
+    container_name: sentry_backend
+    restart: always
+    ports:
+      - "4000:4000"
+    environment:
+      - PORT=4000
+      - DATABASE_URL=postgresql://sentry_admin:sentry_secure_password_2026@postgres:5432/sentry_screening_db?schema=public
+      - JWT_SECRET=sentry_jwt_secret_key_hackathon_2026
+      - NODE_ENV=production
+      - AI_SERVICE_URL=http://localhost:8000
+    depends_on:
+      postgres:
+        condition: service_healthy
+    volumes:
+      - ./backend/uploads:/app/backend/uploads
+
+volumes:
+  postgres_data:

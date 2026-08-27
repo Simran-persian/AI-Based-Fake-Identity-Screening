@@ -1,0 +1,132 @@
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+enum Role {
+  OFFICER
+  SUPERVISOR
+  ADMIN
+  AUDITOR
+}
+
+enum DocumentType {
+  PASSPORT
+  VISA
+  NATIONAL_ID
+  DRIVING_LICENSE
+  PERMIT
+}
+
+enum RecommendedAction {
+  CLEAR
+  REVIEW
+  ESCALATE
+  REJECT
+}
+
+enum OfficerDecision {
+  ACCEPT
+  ESCALATE
+  REJECT
+}
+
+enum ScreeningStatus {
+  PROCESSING
+  COMPLETED
+  FAILED
+}
+
+model User {
+  id           String      @id @default(uuid())
+  name         String
+  email        String      @unique
+  passwordHash String
+  role         Role
+  checkpointId String?
+  checkpoint   Checkpoint? @relation(fields: [checkpointId], references: [id])
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+
+  screeningEvents    ScreeningEvent[]
+  watchlistEntries   WatchlistEntry[]
+  auditLogs          AuditLog[]
+  modelWeightConfigs ModelWeightConfig[]
+}
+
+model Checkpoint {
+  id        String   @id @default(uuid())
+  name      String
+  location  String
+  createdAt DateTime @default(now())
+
+  users           User[]
+  screeningEvents ScreeningEvent[]
+}
+
+model ScreeningEvent {
+  id                  String            @id @default(uuid())
+  officerId           String
+  officer             User              @relation(fields: [officerId], references: [id])
+  checkpointId        String
+  checkpoint          Checkpoint        @relation(fields: [checkpointId], references: [id])
+  documentType        DocumentType
+  rawDocumentUrl      String
+  rawSelfieUrl        String
+  ocrData             String            // Json serialized string for sqlite compatibility
+  validationResult    String            // Json serialized string for sqlite compatibility
+  tamperingScore      Float
+  tamperingHeatmapUrl String?
+  faceMatchScore      Float
+  livenessPassed      Boolean
+  riskScore           Float
+  recommendedAction   RecommendedAction
+  topFactors          String            // Json serialized string for sqlite compatibility
+  officerDecision     OfficerDecision?
+  decisionRemark      String?
+  decidedAt           DateTime?
+  status              ScreeningStatus   @default(PROCESSING)
+  createdAt           DateTime          @default(now())
+  updatedAt           DateTime          @updatedAt
+
+  auditLogs AuditLog[]
+}
+
+model WatchlistEntry {
+  id             String   @id @default(uuid())
+  fullName       String
+  documentNumber String
+  nationality    String
+  reason         String
+  addedByAdminId String
+  addedByAdmin   User     @relation(fields: [addedByAdminId], references: [id])
+  createdAt      DateTime @default(now())
+}
+
+model AuditLog {
+  id               String          @id @default(uuid())
+  screeningEventId String?
+  screeningEvent   ScreeningEvent? @relation(fields: [screeningEventId], references: [id])
+  actorId          String
+  actor            User            @relation(fields: [actorId], references: [id])
+  action           String
+  previousHash     String
+  currentHash      String
+  payload          String          // Json serialized string for sqlite compatibility
+  createdAt        DateTime        @default(now())
+}
+
+model ModelWeightConfig {
+  id               String   @id @default(uuid())
+  ocrWeight        Float
+  validationWeight Float
+  tamperingWeight  Float
+  faceMatchWeight  Float
+  updatedByAdminId String
+  updatedByAdmin   User     @relation(fields: [updatedByAdminId], references: [id])
+  updatedAt        DateTime @updatedAt
+}
