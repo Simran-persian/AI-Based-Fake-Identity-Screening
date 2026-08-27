@@ -441,3 +441,85 @@ function addCaseNote() {
     alert('Note added to case log.');
   }
 }
+
+// --- CYBER AI ASSISTANT CHATBOT LOGIC ---
+function toggleChatbotWindow() {
+  const windowEl = document.getElementById('chatbot-window');
+  if (windowEl) {
+    windowEl.classList.toggle('active');
+    if (windowEl.classList.contains('active')) {
+      const inputEl = document.getElementById('chatbot-input');
+      if (inputEl) inputEl.focus();
+    }
+  }
+}
+
+function handleChatbotKeyPress(e) {
+  if (e.key === 'Enter') {
+    sendChatbotInput();
+  }
+}
+
+function sendChatbotChip(chipText) {
+  queryChatbotBackend(chipText);
+}
+
+function sendChatbotInput() {
+  const inputEl = document.getElementById('chatbot-input');
+  if (!inputEl) return;
+  const message = inputEl.value.trim();
+  if (message.length === 0) return;
+  inputEl.value = '';
+  queryChatbotBackend(message);
+}
+
+async function queryChatbotBackend(userMessage) {
+  appendChatbotMessage('user', userMessage);
+
+  const loadingId = appendChatbotMessage('bot', '⚡ <i>Analyzing intelligence query...</i>');
+
+  try {
+    const res = await fetch('/api/chatbot/query', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + (localStorage.getItem('token') || '')
+      },
+      body: JSON.stringify({ message: userMessage })
+    });
+
+    const data = await res.json();
+    const loadingEl = document.getElementById(loadingId);
+
+    if (data.success && data.answer) {
+      let formattedAnswer = data.answer.replace(/\n/g, '<br>').replace(/\*\*(.*?)\*\*/g, '<b>$1</b>');
+      if (loadingEl) {
+        loadingEl.innerHTML = formattedAnswer;
+      } else {
+        appendChatbotMessage('bot', formattedAnswer);
+      }
+    } else {
+      if (loadingEl) loadingEl.innerHTML = "I am SENTRY AI Assistant. I can help explain risk scores, watchlist entries, or hash-chain audit verification.";
+    }
+  } catch (err) {
+    const loadingEl = document.getElementById(loadingId);
+    if (loadingEl) {
+      loadingEl.innerHTML = "SENTRY AI Assistant active. For risk calculation: Tampering 40%, Face 25%, Validation 20%, OCR 15%.";
+    }
+  }
+}
+
+function appendChatbotMessage(sender, text) {
+  const msgContainer = document.getElementById('chatbot-messages');
+  if (!msgContainer) return null;
+
+  const msgId = 'msg-' + Date.now() + '-' + Math.floor(Math.random() * 1000);
+  const msgDiv = document.createElement('div');
+  msgDiv.className = `chat-msg ${sender}`;
+  msgDiv.id = msgId;
+  msgDiv.innerHTML = text;
+
+  msgContainer.appendChild(msgDiv);
+  msgContainer.scrollTop = msgContainer.scrollHeight;
+  return msgId;
+}

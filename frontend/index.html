@@ -3,12 +3,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SENTRY — AI-Based Fake Identity & Document Screening System</title>
+<title>SENTRY — Document Screening Console</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
-<!-- Live OCR Engine: Tesseract.js Client-Side Processing -->
-<script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
 </head>
 <body>
 
@@ -62,7 +60,7 @@
       </div>
 
       <div class="auth-form active" id="form-login">
-        <div class="field"><label>EMAIL OR PASSPORT NO.</label><input type="text" id="login-user-id" value="jordan.lee@traveler.org"></div>
+        <div class="field"><label>EMAIL OR PASSPORT NO.</label><input type="text" placeholder="you@example.com"></div>
         <div class="field"><label>PASSWORD</label><input type="password" value="••••••••••••"></div>
         <div class="auth-hint">You'll be asked to complete a quick face check after logging in — this keeps your account secure.</div>
         <button class="btn btn-primary btn-block" onclick="userLogin()">Login &amp; Continue</button>
@@ -111,7 +109,7 @@
     </div>
   </div>
 
-  <!-- STEP 3 — FACE LIVENESS / PAD CHECK -->
+  <!-- STEP 3 — FACE LIVENESS / PAD CHECK (User accounts only) -->
   <div class="login-step" id="step-liveness">
     <div class="login-card wide">
       <div class="eyebrow">Login security check</div>
@@ -135,10 +133,7 @@
       </div>
 
       <div class="liveness-verdict" id="liveness-verdict">Initializing camera and running presentation-attack checks…</div>
-      <div style="display:flex;gap:10px;margin-bottom:12px;justify-content:center;">
-        <button class="btn btn-ghost" onclick="startLiveCamera('face')">📷 Open Live Webcam Scanner</button>
-      </div>
-      <button class="btn btn-primary btn-block" id="btn-continue-liveness" onclick="continueAfterLiveness()">Continue to Portal →</button>
+      <button class="btn btn-primary btn-block btn-disabled" id="btn-continue-liveness" disabled onclick="continueAfterLiveness()">Continue to Portal</button>
     </div>
   </div>
 </div>
@@ -176,10 +171,11 @@
       <div class="navitem" data-view="investigation" onclick="goTo('investigation')">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="10" cy="10" r="6"/><path d="M20 20l-5.5-5.5"/></svg>
         Investigation
-        <span class="nav-badge" id="escalation-count-badge">3</span>
+        <span class="nav-badge">3</span>
       </div>
       <div class="navgroup-label">System</div>
-      <div class="navitem" data-view="audit" onclick="goTo('audit')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="9"/><path d="M12 8v4M12 16h.01"/></svg>Audit Log</div>
+      <div class="navitem" onclick="alert('Digital Audit Trail active on backend.')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="9"/><path d="M12 8v4M12 16h.01"/></svg>Audit Log</div>
+      <div class="navitem"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 15a3 3 0 100-6 3 3 0 000 6z"/><path d="M19 12a7 7 0 00-.1-1.2l2-1.6-2-3.4-2.4 1a7 7 0 00-2-1.2L14 3h-4l-.5 2.6a7 7 0 00-2 1.2l-2.4-1-2 3.4 2 1.6A7 7 0 005 12"/></svg>Settings</div>
     </div>
 
     <!-- User nav -->
@@ -194,7 +190,7 @@
         My Queries
       </div>
       <div class="navgroup-label">System</div>
-      <div class="navitem" onclick="openProfileModal()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.5-7 8-7s8 3 8 7"/></svg>Profile &amp; Credentials</div>
+      <div class="navitem"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.5-7 8-7s8 3 8 7"/></svg>Profile</div>
     </div>
 
     <div class="sidebar-foot">
@@ -248,13 +244,18 @@
 
       <div class="dash-grid">
         <div class="card">
-          <div class="panel-title">Recent screenings <span style="font-weight:400;color:var(--text-faint);font-size:11px;">live backend feed</span></div>
+          <div class="panel-title">Recent screenings <span style="font-weight:400;color:var(--text-faint);font-size:11px;">live feed</span></div>
           <table id="dash-table">
             <thead>
               <tr><th>Document</th><th>Traveler</th><th>Type</th><th>Risk</th><th>Time</th></tr>
             </thead>
             <tbody id="dash-tbody">
-              <!-- Populated dynamically via app.js -->
+              <tr class="rowhover" onclick="goTo('result')"><td class="doc-id">DOC-88231</td><td>A. Meridian</td><td>Passport</td><td><span class="risk-chip risk-low">LOW</span></td><td class="doc-id">08:39</td></tr>
+              <tr class="rowhover" onclick="goTo('result')"><td class="doc-id">DOC-88230</td><td>J. Okafor</td><td>Visa</td><td><span class="risk-chip risk-med">MED</span></td><td class="doc-id">08:37</td></tr>
+              <tr class="rowhover" onclick="goTo('result')"><td class="doc-id">DOC-88229</td><td>P. Novak</td><td>Passport</td><td><span class="risk-chip risk-high">HIGH</span></td><td class="doc-id">08:35</td></tr>
+              <tr class="rowhover" onclick="goTo('result')"><td class="doc-id">DOC-88228</td><td>S. Thanh</td><td>National ID</td><td><span class="risk-chip risk-low">LOW</span></td><td class="doc-id">08:33</td></tr>
+              <tr class="rowhover" onclick="goTo('result')"><td class="doc-id">DOC-88227</td><td>M. Dupree</td><td>Driving Licence</td><td><span class="risk-chip risk-low">LOW</span></td><td class="doc-id">08:31</td></tr>
+              <tr class="rowhover" onclick="goTo('result')"><td class="doc-id">DOC-88226</td><td>L. Haddad</td><td>Passport</td><td><span class="risk-chip risk-med">MED</span></td><td class="doc-id">08:28</td></tr>
             </tbody>
           </table>
         </div>
@@ -262,7 +263,9 @@
         <div class="card">
           <div class="panel-title">Escalation queue</div>
           <div class="queue-list" id="queue-list">
-            <!-- Populated dynamically via app.js -->
+            <div class="queue-item" onclick="goTo('result')"><div class="queue-thumb">PP</div><div class="queue-meta"><div class="queue-name">P. Novak — DOC-88229</div><div class="queue-time">Stamp forgery suspected · 4 min ago</div></div><span class="risk-chip risk-high">HIGH</span></div>
+            <div class="queue-item" onclick="goTo('result')"><div class="queue-thumb">VS</div><div class="queue-meta"><div class="queue-name">J. Okafor — DOC-88230</div><div class="queue-time">Face match below threshold · 6 min ago</div></div><span class="risk-chip risk-med">MED</span></div>
+            <div class="queue-item" onclick="goTo('result')"><div class="queue-thumb">PP</div><div class="queue-meta"><div class="queue-name">L. Haddad — DOC-88226</div><div class="queue-time">MRZ checksum mismatch · 15 min ago</div></div><span class="risk-chip risk-med">MED</span></div>
           </div>
           <button class="btn btn-ghost btn-block" style="margin-top:14px;" onclick="goTo('investigation')">Open investigation queue →</button>
         </div>
@@ -275,35 +278,21 @@
       <div class="page-sub">Capture the presented document and a live face image to begin analysis.</div>
 
       <div class="upload-grid">
-        <div class="dropzone" id="doc-upload-dz" onclick="triggerFileInput('file-doc-input')">
+        <div class="dropzone" onclick="triggerFileInput()">
           <input type="file" id="file-doc-input" accept="image/*" style="display:none;" onchange="handleDocUpload(event)">
           <div class="dropzone-icon">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 3v12"/><path d="M7 8l5-5 5 5"/><rect x="3" y="16" width="18" height="5" rx="1.5"/></svg>
           </div>
           <div class="dropzone-title" id="upload-doc-title">Document upload</div>
-          <div class="dropzone-sub">Drag a scan here, or click to browse image file<br>Passport · Visa · National ID · Licence · Permit</div>
-          <div id="doc-preview-box" style="display:none;margin-top:10px;"><img id="doc-preview-img" style="max-width:180px;border-radius:6px;border:1px solid var(--line-bright);"></div>
+          <div class="dropzone-sub">Drag a scan here, or use the checkpoint camera<br>Passport · Visa · National ID · Licence · Permit</div>
         </div>
 
-        <div class="dropzone" id="face-upload-dz" onclick="startLiveCamera('face')">
-          <input type="file" id="file-face-input" accept="image/*" style="display:none;" onchange="handleFaceUpload(event)">
-          <div class="face-frame" id="live-face-upload-reticle">
-            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="var(--cyan)" stroke-width="1.5"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.5-7 8-7s8 3 8 7"/></svg>
+        <div class="dropzone" onclick="triggerFileInput()">
+          <div class="face-frame">
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="var(--text-faint)" stroke-width="1.5"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.5-7 8-7s8 3 8 7"/></svg>
           </div>
-          <div class="dropzone-title" id="upload-face-title">Live face capture</div>
-          <div class="dropzone-sub">Click to launch live webcam scanner — position traveler within reticle frame for auto-capture</div>
-          <div id="face-preview-box" style="display:none;margin-top:10px;"><img id="face-preview-img" style="max-width:90px;border-radius:50%;border:2px solid var(--cyan);"></div>
-        </div>
-      </div>
-
-      <!-- Quick Test Samples & Live Camera -->
-      <div style="margin-top:16px;padding:14px;background:var(--panel);border:1px solid var(--line);border-radius:8px;">
-        <div class="field-list-title">⚡ LIVE CAMERA SCANNER &amp; TEST SAMPLES</div>
-        <div style="display:flex;gap:10px;margin-top:8px;flex-wrap:wrap;">
-          <button class="btn btn-primary" onclick="startLiveCamera('doc')">📷 Scan Document via Live Camera</button>
-          <button class="btn" style="background:var(--cyan);border-color:var(--cyan);color:#0A0D10;font-weight:700;" onclick="startLiveCamera('face')">👤 Scan Live Face via Camera</button>
-          <button class="btn btn-ghost" onclick="loadSampleDoc('passport')">📕 Test Sample 1: Czech Biometric Passport</button>
-          <button class="btn btn-ghost" onclick="loadSampleDoc('visa')">📘 Test Sample 2: International Visa Sticker</button>
+          <div class="dropzone-title">Live face capture</div>
+          <div class="dropzone-sub">Position the traveler within the frame — checked for printed photos, screen replay, multiple faces, coverings &amp; natural movement</div>
         </div>
       </div>
 
@@ -321,8 +310,8 @@
 
     <!-- ===== PROCESSING (Officer) ===== -->
     <div class="view" id="view-processing">
-      <h1 class="page-title">Analyzing Document &amp; Biometrics</h1>
-      <div class="page-sub">Passport · uploaded by Officer Kessler · Real-time AI Forensics</div>
+      <h1 class="page-title">Analyzing DOC-88232</h1>
+      <div class="page-sub">Passport · uploaded by Officer Kessler · 08:42:11</div>
 
       <div class="pipeline-wrap">
         <div class="pipeline" id="pipeline">
@@ -372,139 +361,87 @@
     <div class="view" id="view-result">
       <div style="display:flex;justify-content:space-between;align-items:center;">
         <div>
-          <h1 class="page-title" id="res-doc-id">DOC-88229 — Screening Result</h1>
-          <div class="page-sub" id="res-doc-sub">Passport · P. Novak · screened by Officer Kessler</div>
+          <h1 class="page-title" id="res-doc-id">DOC-88229 — Result</h1>
+          <div class="page-sub" id="res-doc-sub">Passport · P. Novak · screened 08:35:04 by Officer Kessler</div>
         </div>
         <button class="btn btn-ghost" onclick="downloadReportPdf()">📄 Download Official PDF Report</button>
       </div>
 
-      <!-- 4 PROBLEM STATEMENT MODULES TAB BAR -->
-      <div class="auth-tabs" style="margin-top:18px;">
-        <div class="auth-tab active" data-modtab="mod1" onclick="switchModuleTab('mod1')">Module 1: OCR Extraction</div>
-        <div class="auth-tab" data-modtab="mod2" onclick="switchModuleTab('mod2')">Module 2: Document Validation</div>
-        <div class="auth-tab" data-modtab="mod3" onclick="switchModuleTab('mod3')">Module 3: Tampering Detection (Core AI)</div>
-        <div class="auth-tab" data-modtab="mod4" onclick="switchModuleTab('mod4')">Module 4: Face Verification</div>
-      </div>
-
-      <!-- MODULE 1 VIEW -->
-      <div class="mod-content active" id="mod-view-mod1">
-        <div class="result-grid" style="margin-top:12px;">
-          <div>
-            <div class="card">
-              <div class="panel-title">Extracted Document Image &amp; OCR Bounding Boxes</div>
-              <div class="doc-preview" id="res-doc-preview-box">
-                <img id="res-doc-preview-img" src="sample_passport.png" style="max-width:100%;max-height:100%;object-fit:contain;border-radius:6px;">
-              </div>
-              <div class="extract-table">
-                <div class="extract-row"><span class="extract-label">FULL NAME</span><span class="extract-val" id="res-name">Pavel Novak</span></div>
-                <div class="extract-row"><span class="extract-label">DOCUMENT / PASSPORT NO.</span><span class="extract-val" id="res-num">C 40217755</span></div>
-                <div class="extract-row"><span class="extract-label">NATIONALITY / ISSUING CODE</span><span class="extract-val" id="res-nat">Czech Republic (CZE)</span></div>
-                <div class="extract-row"><span class="extract-label">DATE OF BIRTH</span><span class="extract-val" id="res-dob">14 Mar 1989</span></div>
-                <div class="extract-row"><span class="extract-label">DATE OF EXPIRY</span><span class="extract-val" id="res-expiry">02 Jun 2031</span></div>
-                <div class="extract-row"><span class="extract-label">GENDER / SEX</span><span class="extract-val" id="res-gender">M</span></div>
-                <div class="extract-row"><span class="extract-label">VISA / PERMIT TYPE</span><span class="extract-val" id="res-visatype">Standard Tourist (C-Type)</span></div>
-                <div class="extract-row"><span class="extract-label">ENTRY VALIDATION &amp; DURATION</span><span class="extract-val" id="res-visastay">Multiple Entry · 90 Days</span></div>
-              </div>
+      <div class="result-grid" style="margin-top:16px;">
+        <div>
+          <div class="card">
+            <div class="panel-title">Document</div>
+            <div class="doc-preview">
+              <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="var(--text-faint)" stroke-width="1.3"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="8.5" cy="10" r="2"/><path d="M4 19l4-4 3 3 5-6 4 5"/></svg>
+            </div>
+            <div class="extract-table">
+              <div class="extract-row"><span class="extract-label">NAME</span><span class="extract-val" id="res-name">Pavel Novak</span></div>
+              <div class="extract-row"><span class="extract-label">PASSPORT NO.</span><span class="extract-val" id="res-num">C 40217755</span></div>
+              <div class="extract-row"><span class="extract-label">NATIONALITY</span><span class="extract-val" id="res-nat">Czech Republic</span></div>
+              <div class="extract-row"><span class="extract-label">DATE OF BIRTH</span><span class="extract-val" id="res-dob">14 Mar 1989</span></div>
+              <div class="extract-row"><span class="extract-label">DATE OF EXPIRY</span><span class="extract-val" id="res-expiry">02 Jun 2031</span></div>
+              <div class="extract-row"><span class="extract-label">GENDER</span><span class="extract-val" id="res-gender">M</span></div>
             </div>
           </div>
 
-          <div>
-            <div class="card gauge-card">
-              <div class="eyebrow">AI Risk Recommendation</div>
-              <div class="gauge">
-                <svg width="160" height="160" viewBox="0 0 160 160">
-                  <circle cx="80" cy="80" r="68" stroke="var(--line)" stroke-width="10" fill="none"/>
-                  <circle id="gauge-circle" cx="80" cy="80" r="68" stroke="var(--high)" stroke-width="10" fill="none" stroke-linecap="round" stroke-dasharray="427" stroke-dashoffset="107"/>
-                </svg>
-                <div class="gauge-label">
-                  <div class="gauge-score" id="res-score" style="color:var(--high)">75</div>
-                  <div class="gauge-tier" id="res-tier" style="color:var(--high)">HIGH RISK</div>
-                </div>
+          <div class="card" style="margin-top:16px;">
+            <div class="panel-title">Detection flags</div>
+            <div id="flags-container">
+              <div class="flag-item">
+                <div class="flag-dot"></div>
+                <div><div class="flag-title">Stamp forgery suspected</div><div class="flag-sub">Entry stamp ink density inconsistent with issuing authority reference set.</div></div>
               </div>
-              <div class="ai-disclaimer">Automated recommendation only — an Officer must verify and confirm final decision.</div>
-            </div>
-
-            <div class="card" style="margin-top:16px;">
-              <div class="panel-title">Officer final verification</div>
-              <div class="decision-row">
-                <button class="btn btn-ghost" onclick="selectDecision(this,'approve')">Approve</button>
-                <button class="btn" onclick="selectDecision(this,'escalate')">Escalate</button>
-                <button class="btn btn-danger" onclick="selectDecision(this,'deny')">Deny</button>
+              <div class="flag-item warn">
+                <div class="flag-dot"></div>
+                <div><div class="flag-title">Font irregularity in MRZ line 2</div><div class="flag-sub">Character spacing deviates 2.1σ from OCR-B baseline.</div></div>
               </div>
-              <button class="btn btn-primary btn-block btn-disabled" id="btn-confirm-decision" disabled style="margin-top:10px;" onclick="confirmDecision()">Confirm &amp; Finalize as Officer</button>
-              <div class="verify-banner" id="officer-verify-banner"></div>
             </div>
           </div>
         </div>
-      </div>
 
-      <!-- MODULE 2 VIEW -->
-      <div class="mod-content" id="mod-view-mod2" style="display:none;">
-        <div class="card" style="margin-top:12px;">
-          <div class="panel-title">Module 2: ICAO 9303 MRZ &amp; Document Validation Standards</div>
-          <div class="proc-log">
-            <div><span class="ok">PASS</span> ICAO 9303 Modulus 10 Checksum Algorithm Weight Vector (7-3-1): <strong style="color:var(--low)">Valid Check Digit (9)</strong></div>
-            <div><span class="ok">PASS</span> Expiry Date Calculation: Document active until 2031 (<strong style="color:var(--low)">Not Expired</strong>)</div>
-            <div><span class="ok">PASS</span> Issuing State Country Code Alignment: CZE (Czech Republic)</div>
-            <div><span class="tag">[ALERT]</span> Interpol Watchlist Database Lookup: <strong style="color:var(--high)">Partial Name Match on Red Notice #2024-991</strong></div>
-          </div>
-        </div>
-      </div>
-
-      <!-- MODULE 3 VIEW -->
-      <div class="mod-content" id="mod-view-mod3" style="display:none;">
-        <div class="card" style="margin-top:12px;">
-          <div class="panel-title">
-            <span>Module 3: Tampering Detection (Core AI Innovation)</span>
-            <button class="btn btn-ghost" style="font-size:11px;" onclick="toggleElaHeatmap()">🔥 Toggle ELA Pixel Heatmap</button>
-          </div>
-          
-          <!-- Interactive ELA Heatmap Viewer -->
-          <div style="position:relative;width:100%;max-height:300px;background:#000;border-radius:8px;overflow:hidden;display:flex;align-items:center;justify-content:center;margin-bottom:14px;">
-            <canvas id="ela-heatmap-canvas" style="max-width:100%;max-height:300px;object-fit:contain;"></canvas>
-            <div id="ela-scan-overlay" style="display:none;position:absolute;inset:0;background:radial-gradient(circle at 40% 40%, rgba(245,87,108,0.4), transparent 60%);pointer-events:none;border:2px dashed var(--high);"></div>
-          </div>
-
-          <div class="field-list-title">DETECTED ALTERATIONS &amp; EXIF METADATA</div>
-          <div id="flags-container">
-            <!-- Rendered dynamically -->
-          </div>
-        </div>
-      </div>
-
-      <!-- MODULE 4 VIEW -->
-      <div class="mod-content" id="mod-view-mod4" style="display:none;">
-        <div class="card" style="margin-top:12px;">
-          <div class="panel-title">Module 4: Biometric Face Verification &amp; Presentation Attack Detection (PAD)</div>
-          <div style="display:flex;gap:20px;align-items:center;margin-bottom:16px;">
-            <div style="text-align:center;">
-              <div style="width:100px;height:100px;border-radius:12px;background:var(--panel-raised);border:2px solid var(--cyan);overflow:hidden;margin:0 auto 6px;">
-                <img id="face-doc-crop" src="sample_passport.png" style="width:100%;height:100%;object-fit:cover;">
+        <div>
+          <div class="card gauge-card">
+            <div class="eyebrow">AI risk recommendation</div>
+            <div class="gauge">
+              <svg width="160" height="160" viewBox="0 0 160 160">
+                <circle cx="80" cy="80" r="68" stroke="var(--line)" stroke-width="10" fill="none"/>
+                <circle id="gauge-circle" cx="80" cy="80" r="68" stroke="var(--high)" stroke-width="10" fill="none" stroke-linecap="round" stroke-dasharray="427" stroke-dashoffset="107"/>
+              </svg>
+              <div class="gauge-label">
+                <div class="gauge-score" id="res-score" style="color:var(--high)">75</div>
+                <div class="gauge-tier" id="res-tier" style="color:var(--high)">HIGH RISK</div>
               </div>
-              <div style="font-size:11px;color:var(--text-dim);">Passport Photo ID</div>
             </div>
-            
-            <div style="flex:1;text-align:center;">
-              <div style="font-family:var(--font-display);font-size:28px;font-weight:700;color:var(--cyan);" id="biometric-score-num">88% MATCH</div>
-              <div style="font-size:11px;color:var(--text-faint);margin-bottom:8px;">Facial Feature Similarity Vector (Cosine Distance: 0.12)</div>
-              <div class="match-bar-track" style="height:8px;"><div class="match-bar-fill" id="mod4-facebar" style="width:88%"></div></div>
-            </div>
-
-            <div style="text-align:center;">
-              <div style="width:100px;height:100px;border-radius:12px;background:var(--panel-raised);border:2px solid var(--low);overflow:hidden;margin:0 auto 6px;">
-                <img id="face-live-crop" src="sample_passport.png" style="width:100%;height:100%;object-fit:cover;">
+            <div class="ai-disclaimer">This is an automated recommendation only. It does not make the final decision — an Officer must verify and confirm.</div>
+            <div class="match-row">
+              <div class="match-face"></div>
+              <div style="flex:1;">
+                <div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:5px;"><span class="extract-label">FACE MATCH</span><span style="font-family:var(--font-mono)" id="res-facematch">88%</span></div>
+                <div class="match-bar-track"><div class="match-bar-fill" id="res-facebar" style="width:88%"></div></div>
               </div>
-              <div style="font-size:11px;color:var(--text-dim);">Live Camera Snapshot</div>
             </div>
           </div>
 
-          <div class="proc-log">
-            <div><span class="ok">PASS</span> Biometric Liveness Verification: Natural micro-movement confirmed</div>
-            <div><span class="ok">PASS</span> Presentation Attack Detection (PAD): Zero printed photo or screen replay artifacts</div>
+          <div class="card" style="margin-top:16px;">
+            <div class="panel-title">Officer final verification</div>
+            <div class="page-sub" style="margin-bottom:12px;">Select a decision, then confirm to record it as the final, officer-verified outcome.</div>
+            <div class="decision-row">
+              <button class="btn btn-ghost" onclick="selectDecision(this,'approve')">Approve</button>
+              <button class="btn" onclick="selectDecision(this,'escalate')">Escalate</button>
+              <button class="btn btn-danger" onclick="selectDecision(this,'deny')">Deny</button>
+            </div>
+            <button class="btn btn-primary btn-block btn-disabled" id="btn-confirm-decision" disabled style="margin-top:10px;" onclick="confirmDecision()">Confirm &amp; Finalize as Officer</button>
+            <div class="verify-banner" id="officer-verify-banner"></div>
+          </div>
+
+          <div class="card" style="margin-top:16px;">
+            <div class="panel-title">Cross-validation</div>
+            <div class="extract-row"><span class="extract-label">WATCHLIST CHECK</span><span class="risk-chip risk-med" id="res-watchlist">REVIEW</span></div>
+            <div class="extract-row"><span class="extract-label">VISA VALIDITY</span><span class="risk-chip risk-low">VALID</span></div>
+            <div class="extract-row"><span class="extract-label">PRIOR ENTRIES</span><span class="extract-val">3 on record</span></div>
           </div>
         </div>
       </div>
-
     </div>
 
     <!-- ===== INVESTIGATION (Officer) ===== -->
@@ -517,8 +454,27 @@
       <div class="invest-grid">
         <div class="card">
           <div class="panel-title">Case timeline</div>
-          <div class="timeline" id="investigation-timeline">
-            <!-- Timeline items -->
+          <div class="timeline">
+            <div class="tl-item">
+              <div class="tl-time">08:35:04</div>
+              <div class="tl-title">Document screened</div>
+              <div class="tl-desc">Passport DOC-88229 submitted at Checkpoint 04, Terminal B.</div>
+            </div>
+            <div class="tl-item">
+              <div class="tl-time">08:35:09</div>
+              <div class="tl-title">AI returned HIGH risk recommendation</div>
+              <div class="tl-desc">Score 75/100 — driven by stamp forgery signal and MRZ font irregularity. Advisory only.</div>
+            </div>
+            <div class="tl-item">
+              <div class="tl-time">08:36:12</div>
+              <div class="tl-title">Case auto-escalated</div>
+              <div class="tl-desc">Routed to Officer Kessler for manual review per HIGH-risk protocol.</div>
+            </div>
+            <div class="tl-item">
+              <div class="tl-time">now</div>
+              <div class="tl-title">Awaiting officer decision</div>
+              <div class="tl-desc">Traveler held in secondary screening area 2.</div>
+            </div>
           </div>
 
           <div class="note-box" style="margin-top:6px;">
@@ -537,8 +493,8 @@
           </div>
           <div class="card" style="margin-top:16px;">
             <div class="panel-title">Actions</div>
-            <button class="btn btn-block" style="margin-bottom:8px;" onclick="openSecondaryDocModal()">Request secondary document</button>
-            <button class="btn btn-block" style="margin-bottom:12px;" onclick="notifySupervisor()">Notify supervisor</button>
+            <button class="btn btn-block" style="margin-bottom:8px;" onclick="alert('Secondary document request sent to traveler portal.')">Request secondary document</button>
+            <button class="btn btn-block" style="margin-bottom:12px;" onclick="alert('Supervisor notified.')">Notify supervisor</button>
             <label class="confirm-check">
               <input type="checkbox" id="officer-confirm-check" onchange="toggleDenyBtn()">
               I am the verifying Officer and confirm this action
@@ -549,51 +505,25 @@
       </div>
     </div>
 
-    <!-- ===== AUDIT LOG VIEW ===== -->
-    <div class="view" id="view-audit">
-      <h1 class="page-title">Digital Audit Trail &amp; System Logs</h1>
-      <div class="page-sub">Real-time immutable audit trail for legal compliance.</div>
-
-      <div class="card" style="margin-top:20px;">
-        <div class="panel-title">
-          <span>Audit Trail History</span>
-          <button class="btn btn-ghost" style="font-size:11px;" onclick="loadAuditLogsFromBackend()">🔄 Refresh</button>
-        </div>
-        <table>
-          <thead>
-            <tr><th>Timestamp</th><th>Actor / ID</th><th>Action</th><th>Details</th></tr>
-          </thead>
-          <tbody id="audit-tbody">
-            <!-- Populated dynamically via app.js -->
-          </tbody>
-        </table>
-      </div>
-    </div>
-
     <!-- ===== USER PORTAL (User) ===== -->
     <div class="view" id="view-user-portal">
       <h1 class="page-title">Submit a query</h1>
       <div class="page-sub">Upload your document, complete verification, then send it to a Security Officer for review.</div>
 
       <div class="upload-grid" style="margin-top:22px;">
-        <div class="dropzone" id="user-doc-dropzone" onclick="triggerFileInput('user-file-doc')">
-          <input type="file" id="user-file-doc" accept="image/*" style="display:none;" onchange="handleUserDocSelect(event)">
+        <div class="dropzone">
           <div class="dropzone-icon">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 3v12"/><path d="M7 8l5-5 5 5"/><rect x="3" y="16" width="18" height="5" rx="1.5"/></svg>
           </div>
-          <div class="dropzone-title" id="user-doc-title">Upload document</div>
+          <div class="dropzone-title">Upload document</div>
           <div class="dropzone-sub">Passport · Visa · National ID · Licence · Permit</div>
-          <div id="user-doc-preview" style="display:none;margin-top:8px;"><img id="user-doc-img" style="max-width:140px;border-radius:6px;border:1px solid var(--line-bright);"></div>
         </div>
-
-        <div class="dropzone" style="cursor:default;" onclick="event.stopPropagation()">
+        <div class="dropzone">
           <div class="dropzone-icon">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M7 9h10M7 13h6M7 17h4"/></svg>
           </div>
           <div class="dropzone-title">Describe your query</div>
-          <div class="dropzone-sub" style="width:100%;padding:0 10px;">
-            <textarea id="user-query-desc" placeholder="e.g. visa status question, document correction request..." style="width:100%;background:var(--void);border:1px solid var(--line-bright);border-radius:6px;padding:8px;color:var(--text);font-family:var(--font-body);font-size:11.5px;resize:none;min-height:50px;outline:none;margin-top:6px;"></textarea>
-          </div>
+          <div class="dropzone-sub">e.g. visa status question, document correction request</div>
         </div>
       </div>
 
@@ -607,17 +537,6 @@
           <div class="check-item qcheck" data-label="Liveness / presentation-attack check" id="uq-pad"></div>
         </div>
         <button class="btn" style="margin-top:14px;" onclick="runQueryChecks()">Run verification checks</button>
-      </div>
-
-      <!-- LIVE EXTRACTED VALIDATION SUMMARY CARD -->
-      <div class="card" id="user-extracted-data-card" style="display:none;margin-top:16px;border-color:var(--cyan-dim);">
-        <div class="panel-title">
-          <span>Live Extracted Document &amp; Validation Summary</span>
-          <span class="risk-chip risk-low" id="uq-mrz-badge">ICAO 9303 VERIFIED</span>
-        </div>
-        <div class="extract-table" id="uq-extract-table">
-          <!-- Populated dynamically via app.js -->
-        </div>
       </div>
 
       <div class="card" style="margin-top:16px;" id="uq-submit-panel">
@@ -634,13 +553,9 @@
       <div class="card" style="margin-top:16px;">
         <div class="panel-title">My queries</div>
         <table>
-          <thead>
-            <tr><th>Query</th><th>Submitted</th><th>AI checks</th><th>Officer status</th></tr>
-          </thead>
-          <tbody id="user-queries-tbody">
-            <tr><td class="doc-id">QRY-51041</td><td class="doc-id">Yesterday</td><td><span class="risk-chip risk-low">COMPLETE</span></td><td><span class="risk-chip risk-low">VERIFIED · KESSLER</span></td></tr>
-            <tr><td class="doc-id">QRY-50988</td><td class="doc-id">3 days ago</td><td><span class="risk-chip risk-low">COMPLETE</span></td><td><span class="risk-chip risk-med">PENDING OFFICER REVIEW</span></td></tr>
-          </tbody>
+          <tr><th>Query</th><th>Submitted</th><th>AI checks</th><th>Officer status</th></tr>
+          <tr><td class="doc-id">QRY-51041</td><td class="doc-id">Yesterday</td><td><span class="risk-chip risk-low">COMPLETE</span></td><td><span class="risk-chip risk-low">VERIFIED · KESSLER</span></td></tr>
+          <tr><td class="doc-id">QRY-50988</td><td class="doc-id">3 days ago</td><td><span class="risk-chip risk-low">COMPLETE</span></td><td><span class="risk-chip risk-med">PENDING OFFICER REVIEW</span></td></tr>
         </table>
       </div>
     </div>
@@ -648,93 +563,39 @@
   </div>
 </div>
 
-<!-- ================= TOAST CONTAINER ================= -->
-<div id="toast-container"></div>
+<!-- ================= CYBER AI ASSISTANT CHATBOT WIDGET ================= -->
+<button class="chatbot-fab" id="chatbot-fab" onclick="toggleChatbotWindow()" title="SENTRY AI Security Copilot">
+  <span class="chatbot-pulse"></span>
+  🤖 SENTRY AI Copilot
+</button>
 
-<!-- ================= PROFILE MODAL ================= -->
-<div class="modal-overlay" id="modal-profile">
-  <div class="modal-card">
-    <div class="modal-header">
-      <div class="modal-title" id="profile-modal-title">User Profile &amp; Biometric Credentials</div>
-      <button class="modal-close" onclick="closeModal('modal-profile')">✕</button>
+<div class="chatbot-window" id="chatbot-window">
+  <div class="chatbot-header">
+    <div class="chatbot-title">
+      🤖 SENTRY AI COPILOT <span style="font-family:var(--font-mono);font-size:9px;color:var(--cyan);letter-spacing:.08em;">ONLINE</span>
     </div>
-    <div style="display:flex;align-items:center;gap:14px;padding-bottom:16px;border-bottom:1px solid var(--line);">
-      <div class="officer-avatar" style="width:48px;height:48px;font-size:16px;" id="profile-avatar">JL</div>
-      <div>
-        <div style="font-size:16px;font-weight:700;" id="profile-name">Jordan Lee</div>
-        <div style="font-size:12px;color:var(--text-dim);" id="profile-email">jordan.lee@traveler.org</div>
-        <div class="risk-chip risk-low" style="margin-top:4px;">VERIFIED BIOMETRIC IDENTITY</div>
-      </div>
-    </div>
-    <div class="extract-table" style="margin-top:16px;">
-      <div class="extract-row"><span class="extract-label">ACCOUNT ID</span><span class="extract-val doc-id" id="profile-id">USR-992014</span></div>
-      <div class="extract-row"><span class="extract-label">PASSPORT REGISTERED</span><span class="extract-val doc-id">C 40217755 (CZE)</span></div>
-      <div class="extract-row"><span class="extract-label">BIOMETRIC FACE HASH</span><span class="extract-val doc-id">sha256_e8a91f4c…</span></div>
-      <div class="extract-row"><span class="extract-label">CHECKPOINT ACCESS</span><span class="extract-val">Terminal B · Checkpoint 04</span></div>
-      <div class="extract-row"><span class="extract-label">LAST LIVENESS SCAN</span><span class="extract-val" style="color:var(--low);">PASS (99.4% Confidence)</span></div>
-    </div>
-    <div style="margin-top:18px;display:flex;gap:10px;justify-content:flex-end;">
-      <button class="btn btn-ghost" onclick="closeModal('modal-profile')">Close</button>
-      <button class="btn btn-primary" onclick="showToast('Profile Updated', 'Security credentials synchronized.', 'success'); closeModal('modal-profile');">Sync Credentials</button>
+    <button class="chatbot-close" onclick="toggleChatbotWindow()">✕</button>
+  </div>
+
+  <div class="chatbot-messages" id="chatbot-messages">
+    <div class="chat-msg bot">
+      Greetings, Officer. I am <b>SENTRY AI Copilot</b>. How can I assist with threat scoring, MRZ rules, watchlist flags, or audit chain integrity?
     </div>
   </div>
-</div>
 
-<!-- ================= SECONDARY DOC MODAL ================= -->
-<div class="modal-overlay" id="modal-secondary-doc">
-  <div class="modal-card">
-    <div class="modal-header">
-      <div class="modal-title">Request Secondary Document</div>
-      <button class="modal-close" onclick="closeModal('modal-secondary-doc')">✕</button>
-    </div>
-    <div class="field">
-      <label>REQUIRED EVIDENCE TYPE</label>
-      <select id="req-doc-type" style="width:100%;background:var(--void);border:1px solid var(--line-bright);border-radius:6px;padding:10px;color:var(--text);font-family:var(--font-mono);font-size:12px;outline:none;">
-        <option>National Police Clearance Certificate</option>
-        <option>Certified Proof of Birth / Citizenship</option>
-        <option>Consular Emergency Travel Authorization</option>
-        <option>Employer / Sponsoring Organization Warrant</option>
-      </select>
-    </div>
-    <div class="field">
-      <label>OFFICER INSTRUCTIONS TO TRAVELER</label>
-      <textarea id="req-doc-instructions" style="width:100%;background:var(--void);border:1px solid var(--line-bright);border-radius:6px;padding:10px;color:var(--text);font-family:var(--font-body);font-size:12px;resize:none;min-height:70px;outline:none;" placeholder="Detail specific document requirements…"></textarea>
-    </div>
-    <div style="margin-top:18px;display:flex;gap:10px;justify-content:flex-end;">
-      <button class="btn btn-ghost" onclick="closeModal('modal-secondary-doc')">Cancel</button>
-      <button class="btn btn-primary" onclick="sendSecondaryDocRequest()">Send Request to Traveler</button>
-    </div>
+  <div class="chatbot-chips">
+    <span class="chat-chip" onclick="sendChatbotChip('Explain Risk Formula')">Risk Formula</span>
+    <span class="chat-chip" onclick="sendChatbotChip('Check Watchlist')">Watchlist Flags</span>
+    <span class="chat-chip" onclick="sendChatbotChip('Verify Audit Chain')">Audit Chain</span>
+    <span class="chat-chip" onclick="sendChatbotChip('ICAO 9303 Specs')">ICAO Rules</span>
+  </div>
+
+  <div class="chatbot-input-wrap">
+    <input type="text" id="chatbot-input" placeholder="Ask AI Copilot for threat analysis..." onkeypress="handleChatbotKeyPress(event)">
+    <button class="btn btn-primary" style="padding:8px 14px;font-size:12px;" onclick="sendChatbotInput()">Send</button>
   </div>
 </div>
 
 <script src="app.js"></script>
-
-<!-- ================= LIVE CAMERA SCANNER MODAL ================= -->
-<div id="camera-modal" style="display:none;position:fixed;inset:0;background:rgba(10,13,16,0.92);backdrop-filter:blur(10px);z-index:999;align-items:center;justify-content:center;flex-direction:column;">
-  <div class="card" style="width:90%;max-width:640px;position:relative;text-align:center;">
-    <div class="panel-title" style="margin-bottom:12px;">
-      <span>📷 LIVE CHECKPOINT CAMERA SCANNER</span>
-      <button class="btn btn-ghost" onclick="stopLiveCamera()" style="font-size:12px;padding:4px 8px;">✕ Close</button>
-    </div>
-    
-    <div style="position:relative;width:100%;aspect-ratio:16/9;background:#000;border-radius:8px;overflow:hidden;border:1px solid var(--line-bright);">
-      <video id="webcam-video" autoplay playsinline style="width:100%;height:100%;object-fit:cover;"></video>      <div class="scan-sweep" style="animation-duration:1.2s;"></div>
-      
-      <div style="position:absolute;inset:15%;border:2px dashed var(--cyan);border-radius:12px;pointer-events:none;display:flex;align-items:center;justify-content:center;">
-        <span style="font-family:var(--font-mono);font-size:11px;color:var(--cyan);background:rgba(0,0,0,0.6);padding:4px 8px;border-radius:4px;" id="cam-reticle-text">ALIGN PASSPORT / FACE WITHIN FRAME</span>
-      </div>
-    </div>
-    
-    <div class="proc-log" id="cam-ocr-log" style="margin-top:12px;max-height:80px;text-align:left;font-size:11px;">
-      <div><span class="ok">CAM READY</span> Live video stream active.</div>
-    </div>
-    
-    <div style="display:flex;gap:12px;margin-top:14px;justify-content:center;">
-      <button class="btn btn-primary" onclick="snapCameraAndRunLiveOcr()">📸 SNAP &amp; RUN LIVE OCR + FACE SCAN</button>
-      <button class="btn btn-ghost" onclick="stopLiveCamera()">Cancel</button>
-    </div>
-  </div>
-</div>
-
 </body>
 </html>
