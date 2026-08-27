@@ -178,7 +178,11 @@
         Investigation
         <span class="nav-badge" id="escalation-count-badge">3</span>
       </div>
-      <div class="navgroup-label">System</div>
+      <div class="navgroup-label">System & AI</div>
+      <div class="navitem" data-view="copilot" onclick="goTo('copilot')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="var(--cyan)" stroke-width="1.6"><circle cx="12" cy="12" r="9"/><path d="M12 8v4M12 16h.01"/></svg>
+        🤖 SENTRY AI Copilot
+      </div>
       <div class="navitem" data-view="audit" onclick="goTo('audit')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="9"/><path d="M12 8v4M12 16h.01"/></svg>Audit Log</div>
     </div>
 
@@ -298,12 +302,14 @@
 
       <!-- Quick Test Samples & Live Camera -->
       <div style="margin-top:16px;padding:14px;background:var(--panel);border:1px solid var(--line);border-radius:8px;">
-        <div class="field-list-title">⚡ LIVE CAMERA SCANNER &amp; TEST SAMPLES</div>
-        <div style="display:flex;gap:10px;margin-top:8px;flex-wrap:wrap;">
-          <button class="btn btn-primary" onclick="startLiveCamera('doc')">📷 Scan Document via Live Camera</button>
-          <button class="btn" style="background:var(--cyan);border-color:var(--cyan);color:#0A0D10;font-weight:700;" onclick="startLiveCamera('face')">👤 Scan Live Face via Camera</button>
-          <button class="btn btn-ghost" onclick="loadSampleDoc('passport')">📕 Test Sample 1: Czech Biometric Passport</button>
-          <button class="btn btn-ghost" onclick="loadSampleDoc('visa')">📘 Test Sample 2: International Visa Sticker</button>
+        <div class="field-list-title">⚡ LIVE CAMERA SCANNER &amp; SPECIMEN TEST SUITE</div>
+        <div style="display:flex;gap:8px;margin-top:8px;flex-wrap:wrap;">
+          <button class="btn btn-primary" onclick="startLiveCamera('doc')">📷 Live Document Camera</button>
+          <button class="btn" style="background:var(--cyan);border-color:var(--cyan);color:#0A0D10;font-weight:700;" onclick="startLiveCamera('face')">👤 Live Face Camera</button>
+          <button class="btn btn-ghost" style="border:1px solid rgba(52,211,153,0.4);color:var(--low);" onclick="loadSampleDoc('clean_indian_passport')">🇮🇳 Clean Indian Passport</button>
+          <button class="btn btn-danger" style="border:1px solid var(--high);color:var(--high);" onclick="loadSampleDoc('indian_passport_tampered')">⚠️ Doctored Indian Passport (Tampered Stamp)</button>
+          <button class="btn btn-ghost" style="border:1px solid var(--amber);color:var(--amber);" onclick="loadSampleDoc('indian_visa')">🇮🇳 Republic of India e-Visa</button>
+          <button class="btn btn-ghost" onclick="loadSampleDoc('passport')">📕 Czech Passport</button>
         </div>
       </div>
 
@@ -544,6 +550,66 @@
               I am the verifying Officer and confirm this action
             </label>
             <button class="btn btn-danger btn-block btn-disabled" id="btn-deny-case" disabled onclick="denyCase()">Deny entry &amp; close case</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== SENTRY AI COPILOT VIEW ===== -->
+    <div class="view" id="view-copilot">
+      <h1 class="page-title">🤖 SENTRY AI Copilot · Security Intelligence Command</h1>
+      <div class="page-sub">Real-time AI copilot assistant for threat scoring, ELA forensics, watchlist flags, and ICAO 9303 rule verification.</div>
+
+      <div class="dash-grid" style="margin-top:20px;grid-template-columns:1.6fr 1fr;">
+        <!-- Left: Interactive Main Chat Console -->
+        <div class="card" style="display:flex;flex-direction:column;min-height:480px;background:var(--panel);">
+          <div class="panel-title" style="border-bottom:1px solid var(--line-bright);padding-bottom:12px;margin-bottom:16px;">
+            <span>🤖 SENTRY AI COPILOT CONSOLE</span>
+            <span style="font-family:var(--font-mono);font-size:10px;color:var(--cyan);letter-spacing:.08em;">SYSTEM ACTIVE</span>
+          </div>
+
+          <div id="page-copilot-messages" style="flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:12px;max-height:360px;padding-right:6px;">
+            <div class="chat-msg bot" style="max-width:92%;">
+              <b>[SENTRY AI COPILOT SECURITY INTELLIGENCE]</b><br><br>
+              Greetings, Officer. I am your real-time border security intelligence assistant. I can analyze risk scores, check watchlists, run ELA forensics explanations, or verify SHA-256 audit chains.
+            </div>
+          </div>
+
+          <div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:14px;padding-top:10px;border-top:1px solid var(--line);">
+            <button class="chat-chip" onclick="queryChatbotBackend('Explain Risk Formula')">Risk Formula</button>
+            <button class="chat-chip" onclick="queryChatbotBackend('Check Watchlist')">Watchlist Flags</button>
+            <button class="chat-chip" onclick="queryChatbotBackend('Verify Audit Chain')">Audit Chain</button>
+            <button class="chat-chip" onclick="queryChatbotBackend('ICAO Rules')">ICAO 9303 Rules</button>
+            <button class="chat-chip" onclick="queryChatbotBackend('Camera Liveness')">Camera Liveness</button>
+          </div>
+
+          <div style="display:flex;gap:8px;margin-top:12px;">
+            <input type="text" id="page-copilot-input" placeholder="Ask AI Copilot for threat analysis or security specs..." style="flex:1;background:var(--void);border:1px solid var(--line-bright);border-radius:6px;padding:10px 12px;font-size:13px;color:var(--text);outline:none;" onkeypress="if(event.key==='Enter') sendPageCopilotInput()">
+            <button class="btn btn-primary" onclick="sendPageCopilotInput()">Send Query</button>
+          </div>
+        </div>
+
+        <!-- Right: Active AI Models & System Engine Status -->
+        <div style="display:flex;flex-direction:column;gap:16px;">
+          <div class="card">
+            <div class="panel-title">Active AI Risk Model Weights</div>
+            <div style="font-size:12px;line-height:1.7;color:var(--text-dim);">
+              <div style="display:flex;justify-content:space-between;border-bottom:1px solid var(--line);padding:6px 0;"><span>Digital Tampering (ELA)</span><b style="color:var(--amber);">40%</b></div>
+              <div style="display:flex;justify-content:space-between;border-bottom:1px solid var(--line);padding:6px 0;"><span>Biometric Face Match</span><b style="color:var(--cyan);">25%</b></div>
+              <div style="display:flex;justify-content:space-between;border-bottom:1px solid var(--line);padding:6px 0;"><span>MRZ & Rule Validation</span><b style="color:var(--low);">20%</b></div>
+              <div style="display:flex;justify-content:space-between;padding:6px 0;"><span>OCR Field Confidence</span><b style="color:var(--text);">15%</b></div>
+            </div>
+            <button class="btn btn-block" style="margin-top:12px;font-size:12px;" onclick="goTo('admin')">⚙️ Configure Weights in Admin</button>
+          </div>
+
+          <div class="card">
+            <div class="panel-title">Security Engine Status</div>
+            <div style="font-size:12px;color:var(--text-dim);display:flex;flex-direction:column;gap:8px;">
+              <div>✔ SHA-256 Audit Chain: <b style="color:var(--low);">100% INTACT</b></div>
+              <div>✔ Interpol Watchlist DB: <b style="color:var(--low);">SYNCHRONIZED</b></div>
+              <div>✔ ICAO 9303 Checksum Engine: <b style="color:var(--low);">ACTIVE</b></div>
+              <div>✔ Biometric PAD Liveness: <b style="color:var(--low);">99.4% MATCH</b></div>
+            </div>
           </div>
         </div>
       </div>

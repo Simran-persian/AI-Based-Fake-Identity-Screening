@@ -561,9 +561,33 @@ function loadSampleDoc(type) {
   const previewBox = document.getElementById('doc-preview-box');
   const previewImg = document.getElementById('doc-preview-img');
 
-  if (type === 'passport') {
+  if (type === 'clean_indian_passport') {
+    state.uploadedDocFile = { name: 'clean_indian_passport.png', sampleType: 'clean_indian_passport' };
+    if (titleEl) titleEl.textContent = 'Loaded Sample: Clean Indian Passport (IND)';
+    if (previewBox && previewImg) {
+      previewImg.src = '/demo-assets/clean_indian_passport.png';
+      previewBox.style.display = 'block';
+    }
+    showToast('Sample Loaded', 'Clean Indian Passport specimen selected.', 'info');
+  } else if (type === 'indian_passport_tampered') {
+    state.uploadedDocFile = { name: 'indian_passport_tampered.png', sampleType: 'indian_passport_tampered' };
+    if (titleEl) titleEl.textContent = 'Loaded Sample: Doctored Indian Passport (Tampered Stamp Anomaly)';
+    if (previewBox && previewImg) {
+      previewImg.src = '/demo-assets/indian_passport_tampered.png';
+      previewBox.style.display = 'block';
+    }
+    showToast('Sample Loaded', 'Doctored Indian Passport (Tampered Stamp) selected.', 'warning');
+  } else if (type === 'indian_visa') {
+    state.uploadedDocFile = { name: 'indian_visa_sample.png', sampleType: 'indian_visa' };
+    if (titleEl) titleEl.textContent = 'Loaded Sample: Republic of India e-Visa';
+    if (previewBox && previewImg) {
+      previewImg.src = '/demo-assets/indian_visa_sample.png';
+      previewBox.style.display = 'block';
+    }
+    showToast('Sample Loaded', 'Republic of India e-Visa specimen selected.', 'info');
+  } else if (type === 'passport') {
     state.uploadedDocFile = { name: 'sample_passport.png', sampleType: 'passport' };
-    if (titleEl) titleEl.textContent = 'Loaded Sample: sample_passport.png';
+    if (titleEl) titleEl.textContent = 'Loaded Sample: Czech Biometric Passport';
     if (previewBox && previewImg) {
       previewImg.src = 'sample_passport.png';
       previewBox.style.display = 'block';
@@ -571,7 +595,7 @@ function loadSampleDoc(type) {
     showToast('Sample Loaded', 'Czech Biometric Passport test sample selected.', 'info');
   } else {
     state.uploadedDocFile = { name: 'sample_visa.png', sampleType: 'visa' };
-    if (titleEl) titleEl.textContent = 'Loaded Sample: sample_visa.png';
+    if (titleEl) titleEl.textContent = 'Loaded Sample: International Visa Sticker';
     if (previewBox && previewImg) {
       previewImg.src = 'sample_visa.png';
       previewBox.style.display = 'block';
@@ -595,26 +619,63 @@ async function startBackendAnalysis() {
     `;
   }
 
-  const isVisa = state.uploadedDocFile && state.uploadedDocFile.sampleType === 'visa';
-  const samplePayload = isVisa ? {
-    travelerName: "Joseph Okafor",
-    docType: "Visa",
-    docNumber: "VS-409182",
-    nationality: "NGA",
-    dob: "1992-09-04",
-    expiry: "2026-08-30",
+  const sampleType = state.uploadedDocFile ? state.uploadedDocFile.sampleType : 'clean_indian_passport';
+  let samplePayload = {
+    travelerName: "Aarav Sharma",
+    docType: "PASSPORT",
+    docNumber: "Z4091823",
+    nationality: "IND",
+    dob: "1995-07-22",
+    expiry: "2032-12-10",
     gender: "M",
     simulateTampering: "false"
-  } : {
-    travelerName: "Pavel Novak",
-    docType: "Passport",
-    docNumber: "C 40217755",
-    nationality: "CZE",
-    dob: "1989-03-14",
-    expiry: "2031-06-02",
-    gender: "M",
-    simulateTampering: "true"
   };
+
+  if (sampleType === 'indian_passport_tampered') {
+    samplePayload = {
+      travelerName: "Aarav Sharma",
+      docType: "PASSPORT",
+      docNumber: "Z4091823",
+      nationality: "IND",
+      dob: "1995-07-22",
+      expiry: "2032-12-10",
+      gender: "M",
+      simulateTampering: "true"
+    };
+  } else if (sampleType === 'indian_visa') {
+    samplePayload = {
+      travelerName: "Vikramaditya Singh",
+      docType: "VISA",
+      docNumber: "V8890214",
+      nationality: "IND",
+      dob: "1988-11-15",
+      expiry: "2027-05-20",
+      gender: "M",
+      simulateTampering: "false"
+    };
+  } else if (sampleType === 'visa') {
+    samplePayload = {
+      travelerName: "Joseph Okafor",
+      docType: "VISA",
+      docNumber: "VS-409182",
+      nationality: "NGA",
+      dob: "1992-09-04",
+      expiry: "2026-08-30",
+      gender: "M",
+      simulateTampering: "false"
+    };
+  } else if (sampleType === 'passport') {
+    samplePayload = {
+      travelerName: "Pavel Novak",
+      docType: "PASSPORT",
+      docNumber: "C 40217755",
+      nationality: "CZE",
+      dob: "1989-03-14",
+      expiry: "2031-06-02",
+      gender: "M",
+      simulateTampering: "true"
+    };
+  }
 
   try {
     const res = await fetch('/api/screening/analyze', {
@@ -1157,17 +1218,31 @@ function executeChatbotAction(actionName) {
   }
 }
 
+function sendPageCopilotInput() {
+  const inputEl = document.getElementById('page-copilot-input');
+  if (!inputEl) return;
+  const message = inputEl.value.trim();
+  if (message.length === 0) return;
+  inputEl.value = '';
+  queryChatbotBackend(message);
+}
+
 function appendChatbotMessage(sender, text) {
-  const msgContainer = document.getElementById('chatbot-messages');
-  if (!msgContainer) return null;
+  const msgContainers = [
+    document.getElementById('chatbot-messages'),
+    document.getElementById('page-copilot-messages')
+  ].filter(Boolean);
 
   const msgId = 'msg-' + Date.now() + '-' + Math.floor(Math.random() * 1000);
-  const msgDiv = document.createElement('div');
-  msgDiv.className = `chat-msg ${sender}`;
-  msgDiv.id = msgId;
-  msgDiv.innerHTML = text;
 
-  msgContainer.appendChild(msgDiv);
-  msgContainer.scrollTop = msgContainer.scrollHeight;
+  msgContainers.forEach(container => {
+    const msgDiv = document.createElement('div');
+    msgDiv.className = `chat-msg ${sender}`;
+    msgDiv.id = msgId;
+    msgDiv.innerHTML = text;
+    container.appendChild(msgDiv);
+    container.scrollTop = container.scrollHeight;
+  });
+
   return msgId;
 }
