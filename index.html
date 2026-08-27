@@ -707,6 +707,39 @@
   </div>
 </div>
 
+<!-- ================= CYBER AI ASSISTANT CHATBOT WIDGET ================= -->
+<button class="chatbot-fab" id="chatbot-fab" onclick="toggleChatbotWindow()" title="SENTRY AI Security Copilot">
+  <span class="chatbot-pulse"></span>
+  🤖 SENTRY AI Copilot
+</button>
+
+<div class="chatbot-window" id="chatbot-window">
+  <div class="chatbot-header">
+    <div class="chatbot-title">
+      🤖 SENTRY AI COPILOT <span style="font-family:var(--font-mono);font-size:9px;color:var(--cyan);letter-spacing:.08em;">ONLINE</span>
+    </div>
+    <button class="chatbot-close" onclick="toggleChatbotWindow()">✕</button>
+  </div>
+
+  <div class="chatbot-messages" id="chatbot-messages">
+    <div class="chat-msg bot">
+      Greetings, Officer. I am <b>SENTRY AI Copilot</b>. How can I assist with threat scoring, MRZ rules, watchlist flags, or audit chain integrity?
+    </div>
+  </div>
+
+  <div class="chatbot-chips">
+    <span class="chat-chip" onclick="sendChatbotChip('Explain Risk Formula')">Risk Formula</span>
+    <span class="chat-chip" onclick="sendChatbotChip('Check Watchlist')">Watchlist Flags</span>
+    <span class="chat-chip" onclick="sendChatbotChip('Verify Audit Chain')">Audit Chain</span>
+    <span class="chat-chip" onclick="sendChatbotChip('ICAO Rules')">ICAO Rules</span>
+  </div>
+
+  <div class="chatbot-input-wrap">
+    <input type="text" id="chatbot-input" placeholder="Ask AI Copilot for threat analysis..." onkeypress="handleChatbotKeyPress(event)">
+    <button class="btn btn-primary" style="padding:8px 14px;font-size:12px;" onclick="sendChatbotInput()">Send</button>
+  </div>
+</div>
+
 <script src="app.js"></script>
 
 <!-- ================= LIVE CAMERA SCANNER MODAL ================= -->
